@@ -1,164 +1,238 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HSK & TOCFL Pro - Nền Tảng Học Tiếng Trung</title>
-    <!-- Tailwind CSS qua CDN -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HSK & TOCFL Master Pro</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' },
+                        accent: { cyan: '#06b6d4', amber: '#f59e0b', emerald: '#10b981' }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        .perspective { perspective: 1000px; }
-        .transform-style-3d { transform-style: preserve-3d; }
-        .backface-hidden { backface-visibility: hidden; }
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
         .rotate-y-180 { transform: rotateY(180deg); }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glow-indigo { box-shadow: 0 0 25px -5px rgba(99, 102, 241, 0.3); }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-indigo-500 selection:text-white">
 
     <!-- Header Navigation Bar -->
-    <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50 px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center font-bold text-xl shadow-lg shadow-indigo-500/30">漢</div>
-            <div>
-                <span class="font-bold text-lg md:text-xl tracking-wide bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent block leading-none">HSK & TOCFL Pro</span>
-                <span class="text-[10px] text-slate-400">Master Chinese Online</span>
+    <header class="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-tr from-indigo-600 to-cyan-500 rounded-2xl flex items-center justify-center font-extrabold text-xl shadow-lg shadow-indigo-500/25 border border-indigo-400/30">漢</div>
+                <div>
+                    <span class="font-black text-lg md:text-xl tracking-wider bg-gradient-to-r from-indigo-400 via-cyan-300 to-emerald-400 bg-clip-text text-transparent block leading-none">HSK & TOCFL PRO</span>
+                    <span class="text-[10px] text-slate-400 font-medium tracking-wide">SMART LEARNING PLATFORM</span>
+                </div>
             </div>
-        </div>
-        
-        <!-- Controls & Gamification Status -->
-        <div class="flex items-center space-x-3 md:space-x-6">
-            <!-- TTS Speed Control -->
-            <div class="flex items-center space-x-1 bg-slate-800 px-2 py-1 rounded-lg border border-slate-700 text-xs">
-                <span class="text-slate-400 hidden sm:inline">Tốc độ:</span>
-                <select id="ttsRateSelect" class="bg-transparent text-indigo-300 font-semibold focus:outline-none cursor-pointer" onchange="tts.setRate(parseFloat(this.value))">
-                    <option value="0.7" class="bg-slate-800 text-white">0.7x (Chậm)</option>
-                    <option value="0.9" selected class="bg-slate-800 text-white">0.9x (Standard)</option>
-                    <option value="1.2" class="bg-slate-800 text-white">1.2x (Nhanh)</option>
-                </select>
-            </div>
+            
+            <!-- Controls & Gamification Status -->
+            <div class="flex items-center space-x-3 md:space-x-5">
+                <!-- Speed Control -->
+                <div class="flex items-center space-x-1 bg-slate-900/90 px-2.5 py-1.5 rounded-xl border border-slate-800 text-xs shadow-inner">
+                    <span class="text-slate-400 hidden sm:inline">🔊</span>
+                    <select id="ttsRateSelect" class="bg-transparent text-indigo-300 font-semibold focus:outline-none cursor-pointer" onchange="tts.setRate(parseFloat(this.value))">
+                        <option value="0.7" class="bg-slate-900 text-white">0.7x (Chậm)</option>
+                        <option value="0.9" selected class="bg-slate-900 text-white">0.9x (Chuẩn)</option>
+                        <option value="1.2" class="bg-slate-900 text-white">1.2x (Nhanh)</option>
+                    </select>
+                </div>
 
-            <!-- Stats Badge -->
-            <div class="flex items-center space-x-3 text-xs md:text-sm">
-                <span class="text-amber-400 font-bold flex items-center gap-1"><span id="streakCount">🔥 1</span> <span class="hidden sm:inline">Streak</span></span>
-                <span class="text-emerald-400 font-bold flex items-center gap-1"><span id="xpCount">⚡ 0</span> <span class="hidden sm:inline">XP</span></span>
+                <!-- Stats Badges -->
+                <div class="flex items-center space-x-2.5 text-xs md:text-sm">
+                    <div class="bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-xl text-amber-400 font-bold flex items-center gap-1">
+                        🔥 <span id="streakCount">1</span>
+                    </div>
+                    <div class="bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-xl text-emerald-400 font-bold flex items-center gap-1">
+                        ⚡ <span id="xpCount">0</span>
+                    </div>
+                </div>
             </div>
-
-            <!-- Profile / Login -->
-            <button onclick="loginGoogle()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-xs md:text-sm font-semibold transition shadow-md shadow-indigo-600/30">
-                Đăng nhập
-            </button>
         </div>
     </header>
 
-    <!-- Main Content Workspace -->
+    <!-- Main Workspace -->
     <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        <!-- Sidebar: Lộ trình & Bài học -->
-        <section class="bg-slate-800/40 p-5 rounded-2xl border border-slate-700/50 backdrop-blur h-fit">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-md font-bold text-indigo-400">Khóa Học</h2>
-                <select id="courseSelect" onchange="switchCourse(this.value)" class="bg-slate-800 border border-slate-700 text-xs font-semibold rounded-lg px-2 py-1 text-slate-200">
-                    <option value="HSK">HSK (Giản thể)</option>
-                    <option value="TOCFL">TOCFL (Phồn thể)</option>
+        <!-- Sidebar: Khóa học & Lộ trình -->
+        <section class="glass-card p-5 rounded-3xl h-fit space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h2 class="text-sm font-extrabold text-indigo-400 uppercase tracking-wider">Lộ Trình Học Tập</h2>
+                <select id="courseSelect" onchange="switchCourse(this.value)" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-xl px-2.5 py-1.5 text-slate-200 focus:border-indigo-500 outline-none">
+                    <option value="HSK">HSK (Giản Thể)</option>
+                    <option value="TOCFL">TOCFL (Phồn Thể)</option>
                 </select>
             </div>
             
-            <div class="space-y-3" id="lessonList">
-                <!-- Javascript sẽ render danh sách bài học từ JSON tại đây -->
+            <div class="space-y-2.5" id="lessonList">
+                <div onclick="selectLesson(0)" class="p-3.5 bg-gradient-to-r from-indigo-900/40 to-slate-900 border border-indigo-500/40 rounded-2xl cursor-pointer hover:border-indigo-400 transition flex justify-between items-center shadow-lg">
+                    <div>
+                        <p class="font-bold text-sm text-white">Bài 1: 你好 (Xin chào)</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">15 Từ vựng • Nghe • Bài tập</p>
+                    </div>
+                    <span class="text-emerald-400 text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-lg">Đang học</span>
+                </div>
             </div>
         </section>
 
-        <!-- Content Area: Flashcard & Bài tập -->
+        <!-- Content Area -->
         <section class="md:col-span-2 space-y-6">
             
-            <!-- 3D Flashcard Section -->
-            <div class="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/50 text-center relative">
-                <div class="flex justify-between items-center mb-4 text-xs text-slate-400">
-                    <span>Flashcard Từ Vựng</span>
-                    <button onclick="tts.speak(currentVocab.simplified)" class="px-3 py-1.5 bg-indigo-600/30 text-indigo-300 rounded-lg hover:bg-indigo-600/50 flex items-center gap-1 font-semibold transition">
+            <!-- 3D Flip Flashcard Section -->
+            <div class="glass-card p-6 rounded-3xl relative glow-indigo">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Flashcard Lật Mặt 3D</span>
+                    <button onclick="speakCurrentWord()" class="px-3 py-1.5 bg-indigo-600/30 hover:bg-indigo-600/50 border border-indigo-500/40 text-indigo-300 rounded-xl flex items-center gap-1.5 font-bold text-xs transition active:scale-95">
                         🔊 Phát âm TTS
                     </button>
                 </div>
 
-                <!-- Flashcard Display -->
-                <div onclick="flipCard()" class="w-full h-56 bg-slate-900/80 rounded-xl border border-slate-700/80 flex flex-col items-center justify-center p-6 cursor-pointer hover:border-indigo-500 transition shadow-inner relative overflow-hidden group">
-                    <div id="cardFront" class="text-center transition-all duration-300">
-                        <h1 id="cardZh" class="text-5xl font-extrabold text-white mb-2 tracking-wide">你好</h1>
-                        <p id="cardPinyin" class="text-xl text-indigo-400 font-medium">nǐ hǎo</p>
-                        <p class="text-xs text-slate-500 mt-4">(Bấm để xem nghĩa tiếng Việt)</p>
-                    </div>
-                    <div id="cardBack" class="hidden text-center transition-all duration-300">
-                        <p id="cardMeaning" class="text-2xl font-bold text-emerald-400">Xin chào</p>
-                        <p id="cardExample" class="text-sm text-slate-300 mt-3 italic">"你好！很高兴认识你。"</p>
+                <!-- 3D Card Container -->
+                <div class="perspective-1000 w-full h-64">
+                    <div id="flashcard" onclick="flipCard()" class="transform-style-3d w-full h-full relative cursor-pointer rounded-2xl bg-slate-900/90 border border-slate-700/80 shadow-2xl flex items-center justify-center p-6 text-center">
+                        
+                        <!-- Front Face -->
+                        <div class="backface-hidden absolute inset-0 flex flex-col items-center justify-center p-6">
+                            <span class="text-xs text-indigo-400 font-bold bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1 rounded-full mb-3">HSK 1</span>
+                            <h1 id="cardZh" class="text-6xl font-black text-white tracking-wide mb-2">你好</h1>
+                            <p id="cardPinyin" class="text-xl text-cyan-400 font-semibold tracking-wider">nǐ hǎo</p>
+                            <span class="text-[11px] text-slate-500 mt-4 italic">💡 Chạm vào thẻ để xem nghĩa</span>
+                        </div>
+
+                        <!-- Back Face -->
+                        <div class="backface-hidden rotate-y-180 absolute inset-0 flex flex-col items-center justify-center p-6 bg-slate-900/95 rounded-2xl">
+                            <p id="cardMeaning" class="text-3xl font-extrabold text-emerald-400 mb-2">Xin chào</p>
+                            <p id="cardRadical" class="text-xs text-amber-400 mb-4 font-medium">Bộ thủ: 人 (Nhân) + 子 (Tử)</p>
+                            <p id="cardExample" class="text-sm text-slate-300 italic max-w-md">"你好！很高兴认识你。"</p>
+                            <p id="cardExampleMeaning" class="text-xs text-slate-400 mt-1">Xin chào! Rất vui được quen biết bạn.</p>
+                        </div>
+
                     </div>
                 </div>
                 
-                <div class="flex justify-between items-center mt-4">
-                    <button onclick="prevVocab()" class="text-xs text-slate-400 hover:text-white">← Từ trước</button>
-                    <span id="vocabProgress" class="text-xs text-slate-500">1 / 2</span>
-                    <button onclick="nextVocab()" class="text-xs text-slate-400 hover:text-white">Từ tiếp →</button>
+                <!-- Controls Navigation -->
+                <div class="flex justify-between items-center mt-4 px-2">
+                    <button onclick="prevVocab()" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition">← Từ trước</button>
+                    <span id="vocabProgress" class="text-xs font-bold text-slate-400">1 / 2</span>
+                    <button onclick="nextVocab()" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition">Từ tiếp →</button>
                 </div>
             </div>
 
-            <!-- Quiz & Practice Section -->
-            <div class="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/50">
-                <h3 class="text-sm font-bold text-slate-300 mb-3 flex items-center justify-between">
-                    <span>Luyện Nghe & Chọn Đáp Án</span>
-                    <span class="text-xs text-indigo-400" id="quizTypeTag">Nghe hiểu</span>
-                </h3>
+            <!-- Quiz Practice Section -->
+            <div class="glass-card p-6 rounded-3xl space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-sm font-extrabold text-slate-200">Luyện Tập & Kiểm Tra</h3>
+                    <span class="text-xs bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 font-bold px-2.5 py-1 rounded-lg">Nghe hiểu</span>
+                </div>
                 
-                <div class="mb-4">
-                    <button onclick="tts.speak('你好，我是老师。')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-xs flex items-center space-x-2 transition shadow-lg shadow-emerald-600/20">
-                        <span>▶ Phát Âm Thanh Bài Tập</span>
+                <div class="flex items-center space-x-3 bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+                    <button onclick="tts.speak('你好，我是老师。')" class="w-12 h-12 bg-gradient-to-tr from-emerald-600 to-teal-500 rounded-xl flex items-center justify-center text-white text-xl shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95 transition">
+                        ▶
                     </button>
+                    <div>
+                        <p class="text-xs font-bold text-white">Nghe đoạn hội thoại</p>
+                        <p class="text-[11px] text-slate-400">Bấm nút Play để nghe câu hỏi phát âm bằng TTS</p>
+                    </div>
                 </div>
                 
                 <div id="quizOptions" class="space-y-2.5">
-                    <button onclick="checkAnswer(0)" class="w-full text-left p-3 rounded-xl bg-slate-700/40 hover:bg-indigo-600/30 border border-slate-600 hover:border-indigo-500 text-sm transition">A. Xin chào, tôi là bác sĩ.</button>
-                    <button onclick="checkAnswer(1)" class="w-full text-left p-3 rounded-xl bg-slate-700/40 hover:bg-indigo-600/30 border border-slate-600 hover:border-indigo-500 text-sm transition">B. Xin chào, tôi là giáo viên.</button>
-                    <button onclick="checkAnswer(2)" class="w-full text-left p-3 rounded-xl bg-slate-700/40 hover:bg-indigo-600/30 border border-slate-600 hover:border-indigo-500 text-sm transition">C. Tạm biệt bạn.</button>
+                    <button onclick="checkAnswer(0)" class="w-full text-left p-3.5 rounded-2xl bg-slate-900/60 hover:bg-indigo-600/20 border border-slate-800 hover:border-indigo-500/50 text-xs md:text-sm font-medium transition active:scale-[0.99]">A. Xin chào, tôi là bác sĩ.</button>
+                    <button onclick="checkAnswer(1)" class="w-full text-left p-3.5 rounded-2xl bg-slate-900/60 hover:bg-indigo-600/20 border border-slate-800 hover:border-indigo-500/50 text-xs md:text-sm font-medium transition active:scale-[0.99]">B. Xin chào, tôi là giáo viên.</button>
+                    <button onclick="checkAnswer(2)" class="w-full text-left p-3.5 rounded-2xl bg-slate-900/60 hover:bg-indigo-600/20 border border-slate-800 hover:border-indigo-500/50 text-xs md:text-sm font-medium transition active:scale-[0.99]">C. Tạm biệt bạn.</button>
                 </div>
 
-                <div id="quizFeedback" class="mt-4 p-3 rounded-xl text-xs hidden"></div>
+                <div id="quizFeedback" class="p-3.5 rounded-2xl text-xs font-bold hidden transition-all"></div>
             </div>
 
         </section>
     </main>
 
-    <!-- JavaScript & JSON Data Engine -->
+    <!-- Advanced TTS & Application Logic Engine -->
     <script>
-        // 1. Text-To-Speech (Web Speech API)
-        class ChineseTTS {
+        // Universal Robust TTS Engine
+        class RobustChineseTTS {
             constructor() {
                 this.synth = window.speechSynthesis;
-                this.speechRate = 0.9;
-                this.lang = 'zh-CN';
+                this.rate = 0.9;
+                this.selectedVoice = null;
+                this.initVoices();
             }
-            setRate(rate) { this.speechRate = rate; }
+
+            initVoices() {
+                if (!this.synth) return;
+                const updateVoices = () => {
+                    const voices = this.synth.getVoices();
+                    this.selectedVoice = voices.find(v => v.lang.includes('zh-CN') || v.lang.includes('zh') || v.lang.includes('cmn')) || null;
+                };
+                updateVoices();
+                if (this.synth.onvoiceschanged !== undefined) {
+                    this.synth.onvoiceschanged = updateVoices;
+                }
+            }
+
+            setRate(rate) { this.rate = rate; }
+
             speak(text) {
-                if (!this.synth) return alert("Trình duyệt không hỗ trợ TTS.");
-                this.synth.cancel();
-                const u = new SpeechSynthesisUtterance(text);
-                u.lang = this.lang;
-                u.rate = this.speechRate;
-                this.synth.speak(u);
+                if (!text) return;
+                
+                // Method 1: Web Speech API Native
+                if (this.synth) {
+                    this.synth.cancel();
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'zh-CN';
+                    utterance.rate = this.rate;
+                    if (this.selectedVoice) utterance.voice = this.selectedVoice;
+                    
+                    utterance.onerror = () => this.fallbackAudio(text);
+                    this.synth.speak(utterance);
+                } else {
+                    this.fallbackAudio(text);
+                }
+            }
+
+            // Fallback Method: Online Audio Stream (Guarantees Sound on All Devices)
+            fallbackAudio(text) {
+                const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=zh-CN&client=tw-ob`;
+                const audio = new Audio(url);
+                audio.playbackRate = this.rate;
+                audio.play().catch(e => console.log("Audio play blocked by browser. User interaction required."));
             }
         }
-        const tts = new ChineseTTS();
 
-        // 2. Dữ liệu HSK & TOCFL (Cấu trúc JSON tách biệt)
+        const tts = new RobustChineseTTS();
+
+        // Database JSON Model
         const database = {
             HSK: [
                 {
                     lesson_id: "hsk1_01",
                     title: "Bài 1: 你好 (Xin chào)",
                     vocabulary: [
-                        { simplified: "你好", pinyin: "nǐ hǎo", meaning: "Xin chào", example: "你好！很高兴认识你。" },
-                        { simplified: "老师", pinyin: "lǎoshī", meaning: "Giáo viên", example: "我是汉语老师。" }
+                        { simplified: "你好", pinyin: "nǐ hǎo", meaning: "Xin chào", radical: "人 (Nhân) + 子 (Tử)", example: "你好！很高兴认识你。", exampleMeaning: "Xin chào! Rất vui được quen biết bạn." },
+                        { simplified: "老师", pinyin: "lǎoshī", meaning: "Giáo viên", radical: "老 (Lão) + 师 (Sư)", example: "我是汉语老师。", exampleMeaning: "Tôi là giáo viên tiếng Trung." }
                     ],
                     quiz: {
-                        audio_text: "你好，我是老师。",
-                        options: ["A. Xin chào, tôi là bác sĩ.", "B. Xin chào, tôi là giáo viên.", "C. Tạm biệt bạn."],
+                        audioText: "你好，我是老师。",
                         correctIndex: 1,
                         explanation: "老师 (lǎoshī) nghĩa là giáo viên."
                     }
@@ -166,38 +240,41 @@
             ]
         };
 
-        // 3. Application State & Controller
+        // App Controller State
         let currentLesson = database.HSK[0];
         let vocabIndex = 0;
-        let currentVocab = currentLesson.vocabulary[vocabIndex];
         let userXP = 0;
-        let userStreak = 1;
         let isFlipped = false;
 
         function renderLesson() {
-            currentVocab = currentLesson.vocabulary[vocabIndex];
-            document.getElementById('cardZh').innerText = currentVocab.simplified;
-            document.getElementById('cardPinyin').innerText = currentVocab.pinyin;
-            document.getElementById('cardMeaning').innerText = currentVocab.meaning;
-            document.getElementById('cardExample').innerText = `"${currentVocab.example}"`;
+            const vocab = currentLesson.vocabulary[vocabIndex];
+            document.getElementById('cardZh').innerText = vocab.simplified;
+            document.getElementById('cardPinyin').innerText = vocab.pinyin;
+            document.getElementById('cardMeaning').innerText = vocab.meaning;
+            document.getElementById('cardRadical').innerText = "Bộ thủ: " + vocab.radical;
+            document.getElementById('cardExample').innerText = `"${vocab.example}"`;
+            document.getElementById('cardExampleMeaning').innerText = vocab.exampleMeaning;
             document.getElementById('vocabProgress').innerText = `${vocabIndex + 1} / ${currentLesson.vocabulary.length}`;
             
-            // Reset Flashcard View
+            // Reset Flip State
             isFlipped = false;
-            document.getElementById('cardFront').classList.remove('hidden');
-            document.getElementById('cardBack').classList.add('hidden');
+            document.getElementById('flashcard').classList.remove('rotate-y-180');
         }
 
         function flipCard() {
             isFlipped = !isFlipped;
+            const card = document.getElementById('flashcard');
             if (isFlipped) {
-                document.getElementById('cardFront').classList.add('hidden');
-                document.getElementById('cardBack').classList.remove('hidden');
+                card.classList.add('rotate-y-180');
             } else {
-                document.getElementById('cardFront').classList.remove('hidden');
-                document.getElementById('cardBack').classList.add('hidden');
+                card.classList.remove('rotate-y-180');
             }
-            tts.speak(currentVocab.simplified);
+            speakCurrentWord();
+        }
+
+        function speakCurrentWord() {
+            const vocab = currentLesson.vocabulary[vocabIndex];
+            tts.speak(vocab.simplified);
         }
 
         function nextVocab() {
@@ -214,26 +291,21 @@
             }
         }
 
-        function checkAnswer(index) {
+        function checkAnswer(selectedIndex) {
             const feedback = document.getElementById('quizFeedback');
-            feedback.classList.remove('hidden', 'bg-emerald-500/20', 'bg-rose-500/20', 'text-emerald-300', 'text-rose-300');
+            feedback.classList.remove('hidden', 'bg-emerald-500/20', 'bg-rose-500/20', 'text-emerald-300', 'text-rose-300', 'border-emerald-500/30', 'border-rose-500/30');
             
-            if (index === currentLesson.quiz.correctIndex) {
+            if (selectedIndex === currentLesson.quiz.correctIndex) {
                 userXP += 20;
-                document.getElementById('xpCount').innerText = `⚡ ${userXP}`;
-                feedback.classList.add('bg-emerald-500/20', 'text-emerald-300');
+                document.getElementById('xpCount').innerText = userXP;
+                feedback.classList.add('bg-emerald-500/20', 'text-emerald-300', 'border', 'border-emerald-500/30');
                 feedback.innerText = "🎉 Chính xác! +20 XP. " + currentLesson.quiz.explanation;
             } else {
-                feedback.classList.add('bg-rose-500/20', 'text-rose-300');
-                feedback.innerText = "❌ Chưa đúng! Lắng nghe lại phát âm và chọn lại nhé.";
+                feedback.classList.add('bg-rose-500/20', 'text-rose-300', 'border', 'border-rose-500/30');
+                feedback.innerText = "❌ Chưa chính xác! Lắng nghe lại phát âm và chọn lại nhé.";
             }
         }
 
-        function loginGoogle() {
-            alert("Tính năng Đăng nhập Google đã sẵn sàng kết nối OAuth 2.0!");
-        }
-
-        // Initialize App
         window.onload = () => {
             renderLesson();
         };
